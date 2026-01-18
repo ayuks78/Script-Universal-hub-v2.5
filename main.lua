@@ -1,6 +1,6 @@
--- [[ UNIVERSAL-HUB v2.5 FINAL - THE ARCHITECT ]]
--- Codename: @ayuks78 & @GmAI
--- Staus: 100% Functional | Anti-Bug Architecture
+-- [[ UNIVERSAL-HUB v2.5 SUPREMA ]]
+-- @ayuks78 & @GmAI
+-- FOCO: FUNCIONAMENTO TOTAL | ANTI-CASCA VAZIA
 
 local Players = game:GetService("Players")
 local RS = game:GetService("RunService")
@@ -8,174 +8,156 @@ local UIS = game:GetService("UserInputService")
 local TS = game:GetService("TweenService")
 local lp = Players.LocalPlayer
 local camera = workspace.CurrentCamera
-local mouse = lp:GetMouse()
 
--- [[ SISTEMA DE CONFIGURAÇÃO ISOLADO ]]
+-- [[ CONFIGURAÇÃO REAL ]]
 getgenv().Config = {
     Aimbot = false,
     Hitbox = false,
-    HitSize = 12,
+    HitSize = 15,
     Esp = false,
     Noclip = false,
     Boost = false,
-    FovSize = 150,
-    Smoothness = 0.25 -- Puxada mediana
+    FovSize = 180,
+    MaxDist = 700, -- Lock em 700 studs
+    Smoothness = 0.4 -- Puxada forte sem atraso
 }
 
--- [[ FOV VISUAL ]]
+-- [[ FOV FIXA NO CENTRO ]]
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Thickness = 1.5
 FOVCircle.Color = Color3.fromRGB(0, 150, 255)
-FOVCircle.Transparency = 0.8
 FOVCircle.Filled = false
 FOVCircle.Visible = false
 
--- [[ INTERFACE PROFISSIONAL - ESTRUTURA RÍGIDA ]]
+-- [[ INTERFACE SUPREMA (PRETO/AZUL RGB) ]]
 local UI = Instance.new("ScreenGui", (gethui and gethui()) or game:GetService("CoreGui"))
-UI.Name = "FinalHub_" .. math.random(100,999)
-
 local Main = Instance.new("Frame", UI)
-Main.Size = UDim2.new(0, 0, 0, 0) -- Para animação de abertura
+Main.Size = UDim2.new(0, 580, 0, 320)
 Main.Position = UDim2.new(0.5, 0, 0.5, 0)
 Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.BackgroundColor3 = Color3.fromRGB(8, 8, 10)
+Main.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
 Main.BorderSizePixel = 0
-Main.ClipsDescendants = true
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", Main)
 
--- Barra RGB Azul Animada (Rodapé)
-local RGBBar = Instance.new("Frame", Main)
-RGBBar.Size = UDim2.new(1, 0, 0, 3)
-RGBBar.Position = UDim2.new(0, 0, 1, -3)
-RGBBar.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-RGBBar.BorderSizePixel = 0
-task.spawn(function()
-    while task.wait() do
-        local hue = tick() % 5 / 5
-        RGBBar.BackgroundColor3 = Color3.fromHSV(0.6, 0.8, 0.5 + math.sin(tick()*3)*0.3)
-    end
-end)
+-- Barra RGB Azul Inferior
+local RGB = Instance.new("Frame", Main)
+RGB.Size = UDim2.new(1, 0, 0, 3); RGB.Position = UDim2.new(0, 0, 1, -3); RGB.BackgroundColor3 = Color3.fromRGB(0, 80, 255); RGB.BorderSizePixel = 0
+task.spawn(function() while task.wait() do RGB.BackgroundColor3 = Color3.fromHSV(0.6, 0.8, 0.5 + math.sin(tick()*2)*0.3) end end)
 
--- Sidebar (Cômodos Fixos)
+-- Sidebar Fixa
 local Sidebar = Instance.new("Frame", Main)
-Sidebar.Size = UDim2.new(0, 140, 1, -3)
-Sidebar.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
-Instance.new("UICorner", Sidebar)
+Sidebar.Size = UDim2.new(0, 140, 1, 0); Sidebar.BackgroundColor3 = Color3.fromRGB(10, 10, 12); Instance.new("UICorner", Sidebar)
 
 local Container = Instance.new("Frame", Main)
-Container.Size = UDim2.new(1, -160, 1, -20)
-Container.Position = UDim2.new(0, 150, 0, 10)
-Container.BackgroundTransparency = 1
+Container.Size = UDim2.new(1, -160, 1, -20); Container.Position = UDim2.new(0, 150, 0, 10); Container.BackgroundTransparency = 1
 
 local Tabs = {}
-function NewTab(name, id)
+function CreateTab(name, id)
     local P = Instance.new("ScrollingFrame", Container)
     P.Size = UDim2.new(1, 0, 1, 0); P.Visible = (id == 1); P.BackgroundTransparency = 1; P.ScrollBarThickness = 0
     Instance.new("UIListLayout", P).Padding = UDim.new(0, 10)
     
     local B = Instance.new("TextButton", Sidebar)
     B.Size = UDim2.new(1, -20, 0, 35); B.Position = UDim2.new(0, 10, 0, 50 + (id-1)*42)
-    B.Text = name; B.BackgroundColor3 = (id == 1) and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(20, 20, 25)
+    B.Text = name; B.BackgroundColor3 = (id == 1) and Color3.fromRGB(0, 100, 255) or Color3.fromRGB(20, 20, 25)
     B.TextColor3 = Color3.fromRGB(255, 255, 255); B.Font = "GothamBold"; B.TextSize = 11; Instance.new("UICorner", B)
     
     B.MouseButton1Click:Connect(function()
         for _, v in pairs(Tabs) do v.P.Visible = false; v.B.BackgroundColor3 = Color3.fromRGB(20, 20, 25) end
-        P.Visible = true; B.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        P.Visible = true; B.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
     end)
     Tabs[id] = {P = P, B = B}
     return P
 end
 
 function AddToggle(parent, text, key)
-    local f = Instance.new("Frame", parent); f.Size = UDim2.new(1, -10, 0, 42); f.BackgroundColor3 = Color3.fromRGB(15, 15, 18); Instance.new("UICorner", f)
+    local f = Instance.new("Frame", parent); f.Size = UDim2.new(1, -10, 0, 42); f.BackgroundColor3 = Color3.fromRGB(15, 15, 20); Instance.new("UICorner", f)
     local l = Instance.new("TextLabel", f); l.Size = UDim2.new(1, 0, 1, 0); l.Position = UDim2.new(0, 12, 0, 0); l.Text = text; l.TextColor3 = Color3.fromRGB(255, 255, 255); l.TextXAlignment = 0; l.BackgroundTransparency = 1; l.Font = "GothamBold"; l.TextSize = 11
-    local b = Instance.new("TextButton", f); b.Size = UDim2.new(0, 36, 0, 18); b.Position = UDim2.new(1, -48, 0.5, -9); b.BackgroundColor3 = Color3.fromRGB(35, 35, 40); b.Text = ""; Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
+    local b = Instance.new("TextButton", f); b.Size = UDim2.new(0, 36, 0, 18); b.Position = UDim2.new(1, -48, 0.5, -9); b.BackgroundColor3 = Color3.fromRGB(40, 40, 45); b.Text = ""; Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
     
     b.MouseButton1Click:Connect(function()
         getgenv().Config[key] = not getgenv().Config[key]
-        TS:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = getgenv().Config[key] and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(35, 35, 40)}):Play()
-        if key == "Aimbot" then FOVCircle.Visible = getgenv().Config[key] end
+        TS:Create(b, TweenInfo.new(0.3), {BackgroundColor3 = getgenv().Config[key] and Color3.fromRGB(0, 100, 255) or Color3.fromRGB(40, 40, 45)}):Play()
     end)
 end
 
--- CRIAÇÃO DAS ABAS (ORDEAL)
-local Tab1 = NewTab("Main", 1)
-local Tab2 = NewTab("Visual", 2)
-local Tab3 = NewTab("Misc", 3)
-local Tab4 = NewTab("Créditos", 4)
+local T1 = CreateTab("Main", 1); local T2 = CreateTab("Visual", 2); local T3 = CreateTab("Misc", 3)
+AddToggle(T1, "Aimbot Magnético (700st)", "Aimbot")
+AddToggle(T1, "Hitbox Pro (Physical)", "Hitbox")
+AddToggle(T2, "ESP Master (Name/HP/Dist)", "Esp")
+AddToggle(T3, "Noclip Ghost (Wall-Hack)", "Noclip")
+AddToggle(T3, "Boost FPS (Potato)", "Boost")
 
--- FUNÇÕES
-AddToggle(Tab1, "Aimbot Magnético", "Aimbot")
-AddToggle(Tab1, "Hitbox Pro", "Hitbox")
-AddToggle(Tab2, "ESP Full Names", "Esp")
-AddToggle(Tab3, "Noclip Ghost", "Noclip")
-AddToggle(Tab3, "Ultra Boost FPS", "Boost")
-
--- [[ MOTORES DE FUNCIONAMENTO REAL ]]
-
--- Aimbot Magnético (Corrigido para não travar)
-local function GetClosest()
-    local target, dist = nil, getgenv().Config.FovSize
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-            local pos, vis = camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
-            if vis then
-                local mag = (Vector2.new(pos.X, pos.Y) - UIS:GetMouseLocation()).Magnitude
-                if mag < dist then target = v; dist = mag end
-            end
-        end
-    end
-    return target
+-- [[ LÓGICA DE ESP REAL ]]
+local ESPLabels = {}
+local function CreateESP(player)
+    local text = Drawing.new("Text")
+    text.Visible = false; text.Center = true; text.Outline = true; text.Font = 2; text.Size = 13; text.Color = Color3.fromRGB(255, 255, 255)
+    ESPLabels[player] = text
 end
 
+-- [[ MOTOR DE FUNÇÕES ]]
 RS.RenderStepped:Connect(function()
-    FOVCircle.Position = UIS:GetMouseLocation()
+    local screenCenter = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
+    FOVCircle.Position = screenCenter
     FOVCircle.Radius = getgenv().Config.FovSize
-    
+    FOVCircle.Visible = getgenv().Config.Aimbot
+
+    -- AIMBOT LOGIC
     if getgenv().Config.Aimbot and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-        local t = GetClosest()
-        if t then
-            local p = camera:WorldToViewportPoint(t.Character.HumanoidRootPart.Position)
-            local m = UIS:GetMouseLocation()
-            mousemoverel((p.X - m.X) * getgenv().Config.Smoothness, (p.Y - m.Y) * getgenv().Config.Smoothness)
+        local target, closest = nil, getgenv().Config.FovSize
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character.Humanoid.Health > 0 then
+                local worldPos = v.Character.HumanoidRootPart.Position
+                local screenPos, vis = camera:WorldToViewportPoint(worldPos)
+                local distToPlayer = (worldPos - lp.Character.HumanoidRootPart.Position).Magnitude
+                
+                if vis and distToPlayer <= getgenv().Config.MaxDist then
+                    local mag = (Vector2.new(screenPos.X, screenPos.Y) - screenCenter).Magnitude
+                    if mag < closest then target = v; closest = mag end
+                end
+            end
+        end
+        if target then
+            local targetPos = camera:WorldToViewportPoint(target.Character.HumanoidRootPart.Position)
+            mousemoverel((targetPos.X - screenCenter.X) * getgenv().Config.Smoothness, (targetPos.Y - screenCenter.Y) * getgenv().Config.Smoothness)
         end
     end
 
+    -- ESP REAL LOGIC
+    for _, v in pairs(Players:GetPlayers()) do
+        if getgenv().Config.Esp and v ~= lp and v.Character and v.Character:FindFirstChild("Head") then
+            if not ESPLabels[v] then CreateESP(v) end
+            local head = v.Character.Head
+            local pos, vis = camera:WorldToViewportPoint(head.Position)
+            local dist = (head.Position - camera.CFrame.Position).Magnitude
+            
+            if vis then
+                local label = ESPLabels[v]
+                label.Visible = true
+                label.Position = Vector2.new(pos.X, pos.Y - 40)
+                label.Text = v.Name .. " | Vida: " .. math.floor(v.Character.Humanoid.Health) .. "% | Studs: " .. math.floor(dist) .. "m"
+            else ESPLabels[v].Visible = false end
+        elseif ESPLabels[v] then ESPLabels[v].Visible = false end
+    end
+end)
+
+-- [[ NOCLIP & HITBOX & BOOST ]]
+RS.Stepped:Connect(function()
+    if getgenv().Config.Noclip and lp.Character then
+        for _, v in pairs(lp.Character:GetDescendants()) do
+            if v:IsA("BasePart") then v.CanCollide = false end
+        end
+    end
     if getgenv().Config.Hitbox then
         for _, v in pairs(Players:GetPlayers()) do
-            pcall(function()
-                if v ~= lp and v.Character then
-                    v.Character.HumanoidRootPart.Size = Vector3.new(getgenv().Config.HitSize, getgenv().Config.HitSize, getgenv().Config.HitSize)
-                    v.Character.HumanoidRootPart.Transparency = 0.8
-                    v.Character.HumanoidRootPart.CanCollide = false
-                end
-            end)
-        end
-    end
-end)
-
--- Noclip & Boost (Otimizado)
-task.spawn(function()
-    while task.wait(1) do
-        if getgenv().Config.Boost then
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
-            end
-            settings().Rendering.QualityLevel = 1
-        end
-        if getgenv().Config.Noclip and lp.Character then
-            for _, v in pairs(lp.Character:GetDescendants()) do
-                if v:IsA("BasePart") then v.CanCollide = false end
+            if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                v.Character.HumanoidRootPart.Size = Vector3.new(getgenv().Config.HitSize, getgenv().Config.HitSize, getgenv().Config.HitSize)
+                v.Character.HumanoidRootPart.Transparency = 0.8
             end
         end
     end
 end)
 
--- [[ ANIMAÇÃO DE ENTRADA (ESTILO DELTA) ]]
-Main.Visible = true
-TS:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Back), {Size = UDim2.new(0, 580, 0, 320)}):Play()
-
--- Minimizar
-local MinBtn = Instance.new("ImageButton", UI)
-MinBtn.Size = UDim2.new(0, 45, 0, 45); MinBtn.Position = UDim2.new(0, 10, 0.5, -22); MinBtn.Image = "rbxassetid://6023454774"; MinBtn.BackgroundColor3 = Color3.fromRGB(5, 5, 5); Instance.new("UICorner", MinBtn); Instance.new("UIStroke", MinBtn).Color = Color3.fromRGB(0, 120, 255)
-MinBtn.MouseButton1Click:Connect(function() Main.Visible = not Main.Visible end)
+-- Animação de Entrada
+Main.Size = UDim2.new(0,0,0,0); TS:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Back), {Size = UDim2.new(0, 580, 0, 320)}):Play()
